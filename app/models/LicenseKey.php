@@ -57,11 +57,12 @@ class LicenseKey
     public static function create(array $data): LicenseKey
     {
         $pdo = Database::connection();
-        $stmt = $pdo->prepare('INSERT INTO license_keys (license_key, status, meta, expires_at) VALUES (:license_key, :status, :meta, :expires_at)');
+        $stmt = $pdo->prepare('INSERT INTO license_keys (license_key, status, domain, meta, expires_at) VALUES (:license_key, :status, :domain, :meta, :expires_at)');
 
         $stmt->execute([
             'license_key' => $data['license_key'],
             'status' => $data['status'] ?? 'inactive',
+            'domain' => $data['domain'] ?? null,
             'meta' => $data['meta'] ?? null,
             'expires_at' => $data['expires_at'] ?? null,
         ]);
@@ -105,8 +106,7 @@ class LicenseKey
         $active = (int) $pdo->query('SELECT COUNT(*) FROM license_keys WHERE status = "active"')->fetchColumn();
         $expired = (int) $pdo->query('SELECT COUNT(*) FROM license_keys WHERE status = "expired"')->fetchColumn();
         $revoked = (int) $pdo->query('SELECT COUNT(*) FROM license_keys WHERE status = "revoked"')->fetchColumn();
-        $today = (int) $pdo->prepare('SELECT COUNT(*) FROM activation_logs WHERE date(created_at) = date("now")')->execute() ?
-            (int) $pdo->query('SELECT COUNT(*) FROM activation_logs WHERE date(created_at) = date("now")')->fetchColumn() : 0;
+        $today = (int) $pdo->query('SELECT COUNT(*) FROM activation_logs WHERE date(created_at) = date("now")')->fetchColumn();
 
         return compact('total', 'active', 'expired', 'revoked', 'today');
     }

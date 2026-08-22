@@ -68,22 +68,22 @@ class ApiController
 
         if (! $key) {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'invalid', 'License key not found.');
-            $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'Invalid license key.']);
+            $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License does not match. Please contact the application developer.']);
         }
 
         if ($key->status === 'revoked') {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'revoked', 'License has been revoked.');
-            $this->json(200, ['valid' => false, 'status' => 'revoked', 'message' => 'License has been revoked.']);
+            $this->json(200, ['valid' => false, 'status' => 'revoked', 'message' => 'License does not match. Please contact the application developer.']);
         }
 
         if ($key->status === 'inactive') {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'inactive', 'License is inactive.');
-            $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License is inactive. Please activate it first.']);
+            $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License does not match. Please contact the application developer.']);
         }
 
         if ($key->domain !== null && $key->domain !== ($input['domain'] ?? '')) {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'domain_mismatch', 'Domain mismatch.');
-            $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License is not valid for this domain.']);
+            $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License does not match. Please contact the application developer.']);
         }
 
         if ($key->expires_at !== null) {
@@ -93,7 +93,7 @@ class ApiController
             if ($expiresAt < $now) {
                 LicenseKey::update($key->id, ['status' => 'expired']);
                 $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'expired', 'License expired.');
-                $this->json(200, ['valid' => false, 'status' => 'expired', 'message' => 'License has expired.']);
+                $this->json(200, ['valid' => false, 'status' => 'expired', 'message' => 'License does not match. Please contact the application developer.']);
             }
         }
 
@@ -131,12 +131,17 @@ class ApiController
 
         if (! $key) {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'invalid', 'License key not found.');
-            $this->json(200, ['success' => false, 'message' => 'Invalid license key. Please contact support.']);
+            $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.']);
         }
 
         if ($key->status === 'revoked') {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'revoked', 'License revoked during activation.');
-            $this->json(200, ['success' => false, 'message' => 'License has been revoked.']);
+            $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.']);
+        }
+
+        if ($key->domain !== null && $key->domain !== ($input['domain'] ?? '')) {
+            $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'domain_mismatch', 'Domain mismatch during activation.');
+            $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.']);
         }
 
         if ($key->expires_at !== null) {
@@ -145,13 +150,13 @@ class ApiController
 
             if ($expiresAt < $now) {
                 $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'expired', 'License expired during activation.');
-                $this->json(200, ['success' => false, 'message' => 'License has expired.']);
+                $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.']);
             }
         }
 
         LicenseKey::update($key->id, [
             'status' => 'active',
-            'domain' => $input['domain'] ?? null,
+            'domain' => $key->domain ?? ($input['domain'] ?? null),
             'activated_at' => (new DateTime())->format('c'),
         ]);
 

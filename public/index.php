@@ -64,6 +64,9 @@ $controller = match ($path) {
     '/dashboard' => new DashboardController(),
     '/licenses' => new LicenseController(),
     '/licenses/create' => new LicenseController(),
+    '/licenses/show' => new LicenseController(),
+    '/licenses/edit' => new LicenseController(),
+    '/licenses/delete' => new LicenseController(),
     '/logs' => new LogController(),
     default => null,
 };
@@ -78,6 +81,9 @@ if ($controller === null) {
 
 $action = match ($path) {
     '/licenses/create' => 'create',
+    '/licenses/show' => 'show',
+    '/licenses/edit' => 'edit',
+    '/licenses/delete' => 'delete',
     default => 'index',
 };
 

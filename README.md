@@ -28,6 +28,7 @@ chmod 755 storage
 Visit `/` in your browser to access the admin panel.
 
 Features:
+
 - Dashboard with key and request statistics
 - Create, edit, view, and delete license keys
 - View activation logs
@@ -42,9 +43,11 @@ All API endpoints are under `/api` and require an `X-License-Signature` header.
 Verifies a license key.
 
 **Headers:**
+
 - `X-License-Signature`: HMAC-SHA256 of the JSON payload using `LICENSE_SECRET`
 
 **Payload:**
+
 ```json
 {
   "license_key": "XXXXX-XXXXX-XXXXX-XXXXX",
@@ -55,11 +58,12 @@ Verifies a license key.
 ```
 
 **Response:**
+
 ```json
 {
   "valid": true,
   "status": "active",
-  "meta": {"plan": "pro"},
+  "meta": { "plan": "pro" },
   "activated_at": "2024-01-01T00:00:00+00:00",
   "expires_at": null
 }
@@ -70,9 +74,11 @@ Verifies a license key.
 Activates a license key for a domain.
 
 **Headers:**
+
 - `X-License-Signature`: HMAC-SHA256 of the JSON payload using `LICENSE_SECRET`
 
 **Payload:**
+
 ```json
 {
   "license_key": "XXXXX-XXXXX-XXXXX-XXXXX",
@@ -82,11 +88,12 @@ Activates a license key for a domain.
 ```
 
 **Response:**
+
 ```json
 {
   "success": true,
   "message": "License activated successfully.",
-  "meta": {"plan": "pro"},
+  "meta": { "plan": "pro" },
   "expires_at": null
 }
 ```
@@ -97,3 +104,7 @@ Activates a license key for a domain.
 2. The main application sends signed requests to `/api/verify` and `/api/activate`.
 3. This server checks the key, domain binding, expiration, and returns a JSON response.
 4. Activation logs are stored locally for auditing.
+
+## How to start dev
+
+php -S 127.0.0.1:8080 -t public
