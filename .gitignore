@@ -1,0 +1,5 @@
+vendor/
+storage/*.db
+.env
+logs/*.log
+*.db

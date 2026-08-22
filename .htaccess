@@ -1,0 +1,3 @@
+RewriteEngine On
+RewriteRule ^(public/|assets/|css/|js/|images/|favicon.ico) - [L]
+RewriteRule ^(.+)$ public/index.php [QSA,L]
