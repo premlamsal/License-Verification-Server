@@ -123,7 +123,8 @@
         <script>
         function copyConfig(id, key) {
             const serverUrl = window.location.origin;
-            const text = 'LICENSE_KEY=' + key + '\nLICENSE_SERVER_URL=' + serverUrl + '\nLICENSE_SECRET=your_shared_secret_here';
+            const secret = <?php echo json_encode((string) (\App\Core\Env::get('LICENSE_SECRET', 'your_shared_secret_here'))); ?>;
+            const text = 'LICENSE_KEY=' + key + '\nLICENSE_SERVER_URL=' + serverUrl + '\nLICENSE_SECRET=' + secret;
             navigator.clipboard.writeText(text).then(() => {
                 const btn = event.target;
                 btn.textContent = 'Copied!';
