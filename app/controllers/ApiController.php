@@ -83,7 +83,23 @@ class ApiController
             return true;
         }
 
-        return $normalizedStored === $normalizedRequest;
+        if ($normalizedStored === $normalizedRequest) {
+            return true;
+        }
+
+        if ($this->isLocalhostVariant($normalizedStored) && $this->isLocalhostVariant($normalizedRequest)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private function isLocalhostVariant(string $domain): bool
+    {
+        return $domain === 'localhost'
+            || $domain === '127.0.0.1'
+            || str_starts_with($domain, 'localhost:')
+            || str_starts_with($domain, '127.0.0.1:');
     }
 
     private function log(string $licenseKey, ?string $domain, ?string $ip, string $status, string $message): void
@@ -122,6 +138,11 @@ class ApiController
         if ($key->status === 'inactive') {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'inactive', 'License is inactive.');
             $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'inactive']);
+        }
+
+        if ($key->status === 'expired') {
+            $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'expired', 'License has expired.');
+            $this->json(200, ['valid' => false, 'status' => 'expired', 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'expired']);
         }
 
         if ($key->domain !== null && ! $this->domainMatches($key->domain, $input['domain'] ?? '')) {
@@ -180,6 +201,16 @@ class ApiController
         if ($key->status === 'revoked') {
             $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'revoked', 'License revoked during activation.');
             $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'revoked']);
+        }
+
+        if ($key->status === 'inactive') {
+            $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'inactive', 'License is inactive during activation.');
+            $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'inactive']);
+        }
+
+        if ($key->status === 'expired') {
+            $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'expired', 'License expired during activation.');
+            $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'expired']);
         }
 
         if ($key->domain !== null && ! $this->domainMatches($key->domain, $input['domain'] ?? '')) {
