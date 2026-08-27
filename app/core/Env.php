@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Core;
 
-use Dotenv\Dotenv;
-
 class Env
 {
     private static bool $loaded = false;
@@ -17,16 +15,39 @@ class Env
             return;
         }
 
-        $dir = is_file($path) ? dirname($path) : $path;
+        $file = is_file($path) ? $path : ($path.'/.env');
 
-        if (! file_exists($dir.'/.env')) {
+        if (! file_exists($file)) {
             return;
         }
 
-        $dotenv = Dotenv::createImmutable($dir);
-        $dotenv->load();
+        $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-        self::$values = $_ENV;
+        foreach ($lines as $line) {
+            $line = trim($line);
+
+            if ($line === '' || str_starts_with($line, '#')) {
+                continue;
+            }
+
+            $parts = explode('=', $line, 2);
+
+            if (count($parts) !== 2) {
+                continue;
+            }
+
+            $key = trim($parts[0]);
+            $value = trim($parts[1]);
+
+            if (preg_match('/^"(.*)"$/', $value, $matches)) {
+                $value = str_replace(['\\"', '\\n', '\\r'], ['"', "\n", "\r"], $matches[1]);
+            } elseif (preg_match("/^'(.*)'$/", $value, $matches)) {
+                $value = $matches[1];
+            }
+
+            self::$values[$key] = $value;
+        }
+
         self::$loaded = true;
     }
 

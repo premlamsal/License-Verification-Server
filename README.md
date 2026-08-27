@@ -11,17 +11,16 @@ A standalone PHP API server for validating and activating application licenses. 
 ## Setup
 
 1. Upload the `licence-verification-system` folder to your server.
-2. Run `composer install` to install dependencies (`vlucas/phpdotenv`).
-3. Copy `.env` and update at least:
+2. Copy `.env` and update at least:
    - `LICENSE_SECRET` - shared secret with the main application
    - `ADMIN_USERNAME` / `ADMIN_PASSWORD` - admin login credentials
-4. Ensure `storage/` is writable.
+3. Ensure `storage/` is writable.
 
 ```bash
 chmod 755 storage
 ```
 
-5. Point your web server document root to the `public/` directory, or keep the current structure with `.htaccess` rewrites.
+4. The `index.php` is now in the web root, so no document root changes or `.htaccess` rewrites are required.
 
 ## Admin Panel
 
@@ -107,4 +106,4 @@ Activates a license key for a domain.
 
 ## How to start dev
 
-php -S 127.0.0.1:8080 -t public
+php -S 127.0.0.1:8080

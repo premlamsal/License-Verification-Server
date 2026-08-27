@@ -2,7 +2,16 @@
 
 declare(strict_types=1);
 
-require __DIR__.'/../vendor/autoload.php';
+require __DIR__.'/app/core/Env.php';
+require __DIR__.'/app/core/Database.php';
+require __DIR__.'/app/core/Auth.php';
+require __DIR__.'/app/models/LicenseKey.php';
+require __DIR__.'/app/models/ActivationLog.php';
+require __DIR__.'/app/controllers/ApiController.php';
+require __DIR__.'/app/controllers/AuthController.php';
+require __DIR__.'/app/controllers/DashboardController.php';
+require __DIR__.'/app/controllers/LicenseController.php';
+require __DIR__.'/app/controllers/LogController.php';
 
 use App\Core\Auth;
 use App\Core\Env;
@@ -12,7 +21,7 @@ use App\Controllers\LicenseController;
 use App\Controllers\LogController;
 use App\Controllers\ApiController;
 
-Env::load(__DIR__.'/../.env');
+Env::load(__DIR__.'/.env');
 
 if (php_sapi_name() !== 'cli') {
     header('X-Content-Type-Options: nosniff');
@@ -73,9 +82,9 @@ $controller = match ($path) {
 
 if ($controller === null) {
     http_response_code(404);
-    require __DIR__.'/../views/partials/header.php';
-    require __DIR__.'/../views/errors/404.php';
-    require __DIR__.'/../views/partials/footer.php';
+    require __DIR__.'/views/partials/header.php';
+    require __DIR__.'/views/errors/404.php';
+    require __DIR__.'/views/partials/footer.php';
     exit;
 }
 
