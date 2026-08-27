@@ -67,5 +67,11 @@ class Database
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_license_keys_status ON license_keys(status)');
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_activation_logs_license ON activation_logs(license_key)');
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_activation_logs_created ON activation_logs(created_at)');
+
+        $stmt = $pdo->query("PRAGMA table_info(license_keys)");
+        $columns = $stmt->fetchAll(PDO::FETCH_COLUMN, 1);
+        if (!in_array('secondary_domain', $columns, true)) {
+            $pdo->exec('ALTER TABLE license_keys ADD COLUMN secondary_domain TEXT');
+        }
     }
 }

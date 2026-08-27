@@ -27,6 +27,7 @@ class LicenseController
         $key = new \stdClass();
         $key->license_key = $this->generateUniqueKey();
         $key->domain = '';
+        $key->secondary_domain = '';
         $key->status = 'inactive';
         $key->expires_at = date('Y-m-d', strtotime('+1 year'));
         $key->meta = '{"plan":"standard"}';
@@ -35,6 +36,7 @@ class LicenseController
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $licenseKey = trim((string) ($_POST['license_key'] ?? ''));
             $domain = trim((string) ($_POST['domain'] ?? ''));
+            $secondaryDomain = trim((string) ($_POST['secondary_domain'] ?? ''));
             $expiresAt = trim((string) ($_POST['expires_at'] ?? ''));
             $metaJson = trim((string) ($_POST['meta'] ?? '{}'));
             $status = trim((string) ($_POST['status'] ?? 'inactive'));
@@ -56,6 +58,7 @@ class LicenseController
                         'license_key' => $licenseKey,
                         'status' => $status,
                         'domain' => $domain,
+                        'secondary_domain' => $secondaryDomain !== '' ? $secondaryDomain : null,
                         'meta' => $metaJson === '' ? null : $metaJson,
                         'expires_at' => $expiresAt !== '' ? $expiresAt : null,
                     ]);
@@ -100,6 +103,7 @@ class LicenseController
             $expiresAt = trim((string) ($_POST['expires_at'] ?? ''));
             $metaJson = trim((string) ($_POST['meta'] ?? '{}'));
             $status = trim((string) ($_POST['status'] ?? $key->status));
+            $secondaryDomain = trim((string) ($_POST['secondary_domain'] ?? ''));
 
             $meta = json_decode($metaJson, true);
 
@@ -108,6 +112,7 @@ class LicenseController
             } else {
                 LicenseKey::update($id, [
                     'status' => $status,
+                    'secondary_domain' => $secondaryDomain !== '' ? $secondaryDomain : null,
                     'meta' => $metaJson === '' ? null : $metaJson,
                     'expires_at' => $expiresAt !== '' ? $expiresAt : null,
                 ]);

@@ -146,8 +146,11 @@ class ApiController
         }
 
         if ($key->domain !== null && ! $this->domainMatches($key->domain, $input['domain'] ?? '')) {
-            $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'domain_mismatch', 'Domain mismatch.');
-            $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'domain_mismatch']);
+            $secondaryDomain = $key->secondary_domain ?? null;
+            if ($secondaryDomain === null || ! $this->domainMatches($secondaryDomain, $input['domain'] ?? '')) {
+                $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'domain_mismatch', 'Domain mismatch.');
+                $this->json(200, ['valid' => false, 'status' => 'inactive', 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'domain_mismatch']);
+            }
         }
 
         if ($key->expires_at !== null) {
@@ -214,8 +217,11 @@ class ApiController
         }
 
         if ($key->domain !== null && ! $this->domainMatches($key->domain, $input['domain'] ?? '')) {
-            $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'domain_mismatch', 'Domain mismatch during activation.');
-            $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'domain_mismatch']);
+            $secondaryDomain = $key->secondary_domain ?? null;
+            if ($secondaryDomain === null || ! $this->domainMatches($secondaryDomain, $input['domain'] ?? '')) {
+                $this->log($licenseKey, $input['domain'] ?? null, $input['ip'] ?? $this->clientIp(), 'domain_mismatch', 'Domain mismatch during activation.');
+                $this->json(200, ['success' => false, 'message' => 'License does not match. Please contact the application developer.', 'error_code' => 'domain_mismatch']);
+            }
         }
 
         if ($key->expires_at !== null) {

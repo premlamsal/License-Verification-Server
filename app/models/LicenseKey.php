@@ -15,6 +15,7 @@ class LicenseKey
     public string $status;
     public ?string $meta;
     public ?string $domain;
+    public ?string $secondary_domain;
     public ?string $activated_at;
     public ?string $expires_at;
     public ?string $last_verified_at;
@@ -57,12 +58,13 @@ class LicenseKey
     public static function create(array $data): LicenseKey
     {
         $pdo = Database::connection();
-        $stmt = $pdo->prepare('INSERT INTO license_keys (license_key, status, domain, meta, expires_at) VALUES (:license_key, :status, :domain, :meta, :expires_at)');
+        $stmt = $pdo->prepare('INSERT INTO license_keys (license_key, status, domain, secondary_domain, meta, expires_at) VALUES (:license_key, :status, :domain, :secondary_domain, :meta, :expires_at)');
 
         $stmt->execute([
             'license_key' => $data['license_key'],
             'status' => $data['status'] ?? 'inactive',
             'domain' => $data['domain'] ?? null,
+            'secondary_domain' => $data['secondary_domain'] ?? null,
             'meta' => $data['meta'] ?? null,
             'expires_at' => $data['expires_at'] ?? null,
         ]);
@@ -75,7 +77,7 @@ class LicenseKey
         $fields = [];
         $params = ['id' => $id];
 
-        $allowed = ['status', 'meta', 'domain', 'activated_at', 'expires_at', 'last_verified_at'];
+        $allowed = ['status', 'meta', 'domain', 'secondary_domain', 'activated_at', 'expires_at', 'last_verified_at'];
 
         foreach ($allowed as $field) {
             if (array_key_exists($field, $data)) {
@@ -119,6 +121,7 @@ class LicenseKey
         $model->status = (string) $row['status'];
         $model->meta = $row['meta'] ?? null;
         $model->domain = $row['domain'] ?? null;
+        $model->secondary_domain = $row['secondary_domain'] ?? null;
         $model->activated_at = $row['activated_at'] ?? null;
         $model->expires_at = $row['expires_at'] ?? null;
         $model->last_verified_at = $row['last_verified_at'] ?? null;

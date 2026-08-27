@@ -53,6 +53,10 @@
                         <dd class="mt-1 text-sm"><?php echo htmlspecialchars((string) ($key->domain ?? 'Not activated')); ?></dd>
                     </div>
                     <div>
+                        <dt class="text-sm text-gray-500">Secondary Domain</dt>
+                        <dd class="mt-1 text-sm"><?php echo htmlspecialchars((string) ($key->secondary_domain ?? 'Not set')); ?></dd>
+                    </div>
+                    <div>
                         <dt class="text-sm text-gray-500">Created At</dt>
                         <dd class="mt-1 text-sm"><?php echo htmlspecialchars((string) ($key->created_at ?? '-')); ?></dd>
                     </div>
@@ -157,6 +161,13 @@
                                 placeholder="example.com" required>
                             <p class="mt-1 text-xs text-gray-500">This license will only work on this domain. It cannot be changed later.</p>
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Secondary Domain (Optional)</label>
+                            <input type="text" name="secondary_domain" value="<?php echo htmlspecialchars((string) ($key->secondary_domain ?? '')); ?>" <?php echo isset($key->id) ? 'readonly' : ''; ?>
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm <?php echo isset($key->id) ? 'bg-gray-100' : ''; ?>"
+                                placeholder="e.g. gangotrisuppliers.com.np.nirajanbanks.com">
+                            <p class="mt-1 text-xs text-gray-500">Fallback domain for multi-hosting environments. Leave empty if not needed.</p>
+                        </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Created At</label>
@@ -202,8 +213,9 @@
                         <tr>
                             <th class="px-6 py-3 text-left text-gray-500">Key</th>
                             <th class="px-6 py-3 text-left text-gray-500">Status</th>
-                            <th class="px-6 py-3 text-left text-gray-500">Domain</th>
-                            <th class="px-6 py-3 text-left text-gray-500">Expires</th>
+                        <th class="px-6 py-3 text-left text-gray-500">Domain</th>
+                        <th class="px-6 py-3 text-left text-gray-500">Secondary Domain</th>
+                        <th class="px-6 py-3 text-left text-gray-500">Expires</th>
                             <th class="px-6 py-3 text-left text-gray-500">Created</th>
                             <th class="px-6 py-3 text-left text-gray-500">Actions</th>
                         </tr>
@@ -227,8 +239,9 @@
                                             <?php echo htmlspecialchars((string) $k->status); ?>
                                         </span>
                                     </td>
-                                    <td class="px-6 py-3"><?php echo htmlspecialchars((string) ($k->domain ?? '-')); ?></td>
-                                    <td class="px-6 py-3"><?php echo $k->expires_at ? htmlspecialchars((string) $k->expires_at) : '-'; ?></td>
+                                <td class="px-6 py-3"><?php echo htmlspecialchars((string) ($k->domain ?? '-')); ?></td>
+                                <td class="px-6 py-3"><?php echo htmlspecialchars((string) ($k->secondary_domain ?? '-')); ?></td>
+                                <td class="px-6 py-3"><?php echo $k->expires_at ? htmlspecialchars((string) $k->expires_at) : '-'; ?></td>
                                     <td class="px-6 py-3 whitespace-nowrap"><?php echo htmlspecialchars((string) ($k->created_at ?? '-')); ?></td>
                                     <td class="px-6 py-3 whitespace-nowrap space-x-3">
                                         <a href="/licenses/show?id=<?php echo (int) $k->id; ?>" class="text-blue-600 hover:text-blue-800">View</a>
